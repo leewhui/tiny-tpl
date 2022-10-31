@@ -10,11 +10,9 @@ export const buildAst = (tokens: TokenInterface[]) => {
     else ast = { token, parent: null, children: [] }
 
     if (stack.length > 0) {
-      if (ast.token.type === tokenType.VAIRABLE && ast.token.content[0] === '/') {
-
-      } else {
-        ast.parent = stack[0];
-        stack[0].children.push(ast);
+      if (ast.token.type === tokenType.TEXT || (ast.token.type === tokenType.VAIRABLE && ast.token.content[0] !== '/')) {
+        ast.parent = stack[stack.length - 1];
+        stack[stack.length - 1].children.push(ast);
       }
     } else {
       root.push(ast);
@@ -24,9 +22,11 @@ export const buildAst = (tokens: TokenInterface[]) => {
       stack.push(ast);
     } else if (ast.token.type === tokenType.VAIRABLE && ast.token.content[0] === '/') {
       if (stack.length === 0) throw new Error('wrong syntax');
-      stack.pop()
+      const pop = stack.pop();
+      if (pop?.token.content.substring(1) !== ast.token.content.substring(1)) {
+        throw new Error(`wrong nested, ${pop!.token.content}, ${ast.token.content}`);
+      }
     }
-
   });
 
   return root;

@@ -1,8 +1,6 @@
 import { AstInterface, TokenInterface, tokenType } from "./type";
 
 export const render = (asts: AstInterface[], data: Record<string, any>) => {
-  console.log(asts);
-
   let output = ``;
   asts.forEach(ast => {
     output += renderAst(ast, data);
